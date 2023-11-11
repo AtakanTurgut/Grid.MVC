@@ -1,0 +1,112 @@
+﻿@using GridMvc.Html
+@model IEnumerable<Grid_MVC.Models.Person>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Grid MVC</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/Gridmvc.css" rel="stylesheet" />
+    <link href="~/Content/gridmvc.datepicker.min.css" rel="stylesheet" />
+
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/gridmvc.min.js"></script>
+    <script src="~/Scripts/bootstrap-datepicker.js"></script>
+    <script src="~/Scripts/gridmvc.lang.tr.js"></script>
+    <script src="~/Scripts/gridmvc.customwidgets.js"></script>
+</head>
+<body>
+    <div id="personsGrid">
+        @Html.Grid(Model).Named("Person1").Columns(col =>
+   {
+       col.Add(x => x.Id).Titled("Id").Sortable(true);
+
+       col.Add(x => x.FullName)
+            .RenderValueAs(x => x.FullName + $" ({x.BirthDate.Year})")
+            .Titled("Ad Soyad").Filterable(true).Sortable(true);
+            //.SetFilterWidgetType("CustomCompanyNameFilterWidget");
+
+       col.Add(x => x.Age, false).Titled("Yaş").Filterable(true).Sortable(true);
+
+       col.Add(x => x.BirthDate).Format("{0:dd.MM.yyyy}")
+            .Titled("Doğum Tarihi").Filterable(true).Sortable(true);
+
+       col.Add(x => x.IsActive).RenderValueAs(x => (x.IsActive) ? "Evet" : "Hayır")
+            .Titled("Aktif").Filterable(true).Sortable(true);
+
+       col.Add().Encoded(false).Sanitized(false).RenderValueAs(x =>
+            Html.CheckBox("selecter", false)).SetWidth(30);
+
+       col.Add().Encoded(false).Sanitized(false).RenderValueAs(html =>
+       {
+           string htmlStr = $"<a href='Edit/{html.Id.ToString()}' class='btn btn-warning'>" +
+                "<span class='glyphicon glyphicon-edit'></span> Düzenle" +
+            " </a>";
+
+           return MvcHtmlString.Create(htmlStr);
+       }).SetWidth(30);
+
+       col.Add().Encoded(false).Sanitized(false).RenderValueAs(html =>
+       {
+           string htmlStr = $"<a href='Delete/{html.Id.ToString()}' class='btn btn-danger'>" +
+                "<span class='glyphicon glyphicon-remove'></span> Kaldır " +
+           "</a>";
+
+           return MvcHtmlString.Create(htmlStr);
+       }).SetWidth(30);
+
+       col.Add().Encoded(false).Sanitized(false).RenderValueAs(x =>
+            Html.ActionLink("Detaylar", "Detail", new { id = x.Id }, new { @class = "btn btn-info" }))
+            .SetWidth(30);
+
+   }).WithPaging(10, 15, "grid1_page").SetLanguage("tr")
+    </div>
+
+    <div id="details">
+        <span class="bolder">Id: </span><span id="personId"></span> <br />
+        <span class="bolder">Ad Soyad: </span><span id="personFullName"></span> <br />
+        <span class="bolder">Yaş: </span><span id="personAge"></span> <br />
+        <span class="bolder">Doğum Tarihi: </span><span id="personBirthDate"></span> <br />
+        <span class="bolder">Aktif: </span><span id="personIsActive"></span> <br />
+    </div>
+    
+    <script>
+        $(function () {
+            pageGrids.Person1.onRowSelect(function (e) {
+                var data = e.row;
+
+                $("#personId").text(data.Id);
+                $("#personFullName").text(data.FullName);
+                $("#personAge").text(data.Age);
+                $("#personBirthDate").text(data.BirthDate);
+                $("#personIsActive").text(data.IsActive);
+            });
+        });
+    </script>
+    <script>
+        pageGrids.Person1.addFilterWidget(new CustomersFilterWidget());
+    </script>
+
+    <style>
+        .bolder {
+            font-weight: bold;
+        }
+
+        #personsGrid {
+            display: block;
+            margin: 10px;
+        }
+
+        #details {
+            display: block;
+            margin: 10px;
+        }
+    </style>
+</body>
+</html>
