@@ -29,7 +29,7 @@ Packages can be installed from the "[NuGet Gallery](https://www.nuget.org/packag
 ```
 <br/>
 
-- [FakeData 1.0.0](https://www.nuget.org/packages/FakeData) => For Create Fake Data
+- [FakeData 1.0.0](https://www.nuget.org/packages/FakeData) -> For Create Fake Data
 ```
     PM> NuGet\Install-Package Grid.Mvc.DatePicker -Version 1.0.0
 ```
